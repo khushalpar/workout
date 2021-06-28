@@ -29,8 +29,8 @@ default     = "us-central1"
 /////////////////////
 resource "google_compute_instance" "vm_instance" {
  project  = "spanner33"
-  name         = "terraform-instance"
-  machine_type = "n1-standard-1"
+  name         = "poc-instance"
+  machine_type = "f1-micro"
   zone   = "us-central1-a"
 
   boot_disk {
