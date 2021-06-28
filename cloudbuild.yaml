@@ -1,24 +1,18 @@
- 
-- id: 'terraform-apply'
--  waitFor:
-- 'terraform-init-plan'
-  name: 'alpine:3.13.3'
-  volumes:
-- name: 'workout'
-  path: '/home/khushalpar/workout'
-  dir: '/home/khushalpar/workout'
+steps:
+- id: 'terraform init'
+  name: 'hashicorp/terraform:1.0.0'
   entrypoint: 'sh'
-  args:
-- '-c'
-- |
-set -eo pipefail
- 
- 
- 
- 
- tfenv install
-  terraform init
-  terraform apply \
--auto-approve \
-
-done
+  args: 
+  - '-c'
+  - | 
+   
+        terraform init -reconfigure
+       
+          echo ""
+          echo "*************** TERRAFOM PLAN ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform init -reconfigure || exit 1
+          cd ../../
+        done
+       
