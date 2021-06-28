@@ -10,10 +10,9 @@ steps:
        
           echo ""
           echo "*************** TERRAFOM INIT ******************"
-          echo "******* At environment: ${env} ********"
           echo "*************************************************"
           terraform init -reconfigure || exit 1
-          cd ../../
+          
 steps:
 - id: 'terraform plan'
   name: 'hashicorp/terraform:1.0.0'
@@ -26,10 +25,9 @@ steps:
        
           echo ""
           echo "*************** TERRAFOM PLAN ******************"
-          echo "******* At environment: ${env} ********"
           echo "*************************************************"
           terraform plan || exit 1
-          cd ../../
+          
 steps:
 - id: 'terraform apply'
   name: 'hashicorp/terraform:1.0.0'
@@ -42,7 +40,6 @@ steps:
        
           echo ""
           echo "*************** TERRAFOM APPLY AUTO APPROVE ******************"
-          echo "******* At environment: ${env} ********"
           echo "*************************************************"
           terraform apply -auto-approve || exit 1
-          cd ../../
+          
