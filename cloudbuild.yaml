@@ -9,10 +9,40 @@ steps:
         terraform init -reconfigure
        
           echo ""
-          echo "*************** TERRAFOM PLAN ******************"
+          echo "*************** TERRAFOM INIT ******************"
           echo "******* At environment: ${env} ********"
           echo "*************************************************"
           terraform init -reconfigure || exit 1
           cd ../../
-        done
+steps:
+- id: 'terraform plan'
+  name: 'hashicorp/terraform:1.0.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+   
+        terraform plan
        
+          echo ""
+          echo "*************** TERRAFOM PLAN ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform plan || exit 1
+          cd ../../
+steps:
+- id: 'terraform apply'
+  name: 'hashicorp/terraform:1.0.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+   
+        terraform apply -auto-approve
+       
+          echo ""
+          echo "*************** TERRAFOM APPLY AUTO APPROVE ******************"
+          echo "******* At environment: ${env} ********"
+          echo "*************************************************"
+          terraform apply -auto-approve || exit 1
+          cd ../../
