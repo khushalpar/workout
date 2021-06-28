@@ -1,8 +1,65 @@
+
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '${_IMAGE}', '.']
+- id: 'master'
+  name: 'work1'
+  entrypoint: 'sh'  
+  args: 
+  - '-c'
+  - | 
+      echo "***********************"
+      echo "$BRANCH_NAME"
+      echo "***********************"
+- id: 'terraform init'
+  name: 'hashicorp/terraform:1.0.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - |
+      if [ -d "$BRANCH_NAME" ]; then
+         $BRANCH_NAME
+        terraform init
+    
+          echo ""
+          echo "*************** TERRAFORM INIT ******************"
+          
+          echo "*************************************************"
+          terraform init || exit 1
+          
+        done
+      fi 
+# [START terraformf-plan]
+- id: 'terraform plan'
+  name: 'hashicorp/terraform:1.0.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "$BRANCH_NAME" ]; then
+        cd $BRANCH_NAME
+        terraform plan
+      
+          echo ""
+          echo "*************** TERRAFOM PLAN ******************"
+    
+          echo "*************************************************"
+          terraform plan || exit 1
+         
+        done
+      fi 
+# [END tf-plan]
 
-images: ['${_IMAGE}']
-
-substitutions:
-  _IMAGE: 'gcr.io/${spanner33}/${workout}:${workout:-${SHORT_SHA}}'
+# [START tf-apply]
+- id: 'terraform apply'
+  name: 'hashicorp/terraform:1.0.0'
+  entrypoint: 'sh'
+  args: 
+  - '-c'
+  - | 
+      if [ -d "$BRANCH_NAME" ]; then
+        cd $BRANCH_NAME      
+        terraform apply -auto-approve
+      else
+        echo "***************************** SKIPPING APPLYING *******************************"
+        echo "Branch '$BRANCH_NAME' does not represent an oficial environment."
+        echo "*******************************************************************************"
+      fi
