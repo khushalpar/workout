@@ -15,7 +15,7 @@ steps:
           
 steps:
 - id: 'terraform plan'
-  name: 'plan'
+  name: 'hashicorp/terraform:1.0.0'
   entrypoint: 'sh'
   args: 
   - '-c'
@@ -30,7 +30,7 @@ steps:
           
 steps:
 - id: 'terraform apply'
-  name: 'apply'
+  name: 'hashicorp/terraform:1.0.0'
   entrypoint: 'sh'
   args: 
   - '-c'
