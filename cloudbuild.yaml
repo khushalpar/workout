@@ -1,31 +1,28 @@
- id: 'terraform-apply'
-  waitFor:
-- 'terraform-init-plan'
-  name: 'alpine:3.13.3'
-  volumes:
-- name: 'workout'
-  path: '/home/khushalpar/workout'
-  dir: '/home/khushalpar/workout'
-  entrypoint: 'sh'
-  args:
-- '-c'
-- |
-set -eo pipefail
-
-apk add git bash curl
-git https://github.com/khushalpar/workout.git /opt/.tfenv
-ln -s /opt/.tfenv/bin/* /usr/local/bin
-
-for folder in $(ls .); do
-  echo "+-------------------------------------------+"
-  echo "Applying state ${folder} "
-  echo "+-------------------------------------------+"
-
-  cd $folder
-  tfenv install
-  terraform init
-  terraform apply \
--auto-approve \
-"/var/terraform_plan_files/${folder}_${BUILD_ID}_${PROJECT_NUMBER}.plan"
-  cd -
-done
+version: 2.1
+orbs:
+  terraform: "workout/terraform@1.1.0"
+workflows:
+  deploy_infrastructure:
+    jobs:
+      - terraform/fmt:
+          checkout: true
+          context: terraform
+      - terraform/validate:
+          checkout: true
+          context: terraform
+          requires:
+            - terraform/fmt
+      - terraform/plan:
+          checkout: true
+          context: terraform
+          persist-workspace: true
+          requires:
+            - terraform/validate
+      - terraform/apply:
+          attach-workspace: true
+          context: terraform
+          filters:
+            branches:
+              only: master
+          requires:
+            - terraform/plan
