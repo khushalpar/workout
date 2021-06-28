@@ -4,6 +4,6 @@ terraform {
   backend "gcs" {
     bucket  = "github"
     prefix  = "terraform/state"
-    credentials = "-33b118fd26d6.json"
+    credentials = "spanner33-33b118fd26d6.json"
   }
 }

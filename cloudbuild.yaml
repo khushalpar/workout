@@ -1,6 +1,6 @@
  
 - id: 'terraform-apply'
-  waitFor:
+-  waitFor:
 - 'terraform-init-plan'
   name: 'alpine:3.13.3'
   volumes:
