@@ -1,41 +1,24 @@
-build {
-    step {
-      id          = "branch name"
-      name        = "alpine"
-      entrypoint  = "sh"
-      args        = [
-        "-c",  
-<<-EOF
-  echo "***********************"
-  echo "$BRANCH_NAME"
-  echo "***********************"
-EOF
-      ]
-    }
-    step {
-      id          = "tf init"
-      name        = "hashicorp/terraform:0.13.0"
-      entrypoint  = "sh"
-      args        = [
-        "-c",
-<<-EOF
-if [ -d "environments/$BRANCH_NAME/" ]; then
-  cd environments/$BRANCH_NAME
+ 
+- id: 'terraform-apply'
+  waitFor:
+- 'terraform-init-plan'
+  name: 'alpine:3.13.3'
+  volumes:
+- name: 'workout'
+  path: '/home/khushalpar/workout'
+  dir: '/home/khushalpar/workout'
+  entrypoint: 'sh'
+  args:
+- '-c'
+- |
+set -eo pipefail
+ 
+ 
+ 
+ 
+ tfenv install
   terraform init
-else
-  for dir in environments/*/
-  do
-      cd $dir  
-      env=$dir%*/
-      env=$env#*/
-      echo ""
-      echo "*************** TERRAFORM INIT ******************"
-      echo "******* At environment: $env ********"
-      echo "*************************************************"
-      terraform init || exit 1
-      cd ../../
-  done
-fi
-EOF
-      ]
-    }
+  terraform apply \
+-auto-approve \
+
+done
