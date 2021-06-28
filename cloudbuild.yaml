@@ -1,65 +1,31 @@
+ id: 'terraform-apply'
+  waitFor:
+- 'terraform-init-plan'
+  name: 'alpine:3.13.3'
+  volumes:
+- name: 'workout'
+  path: '/home/khushalpar/workout'
+  dir: '/home/khushalpar/workout'
+  entrypoint: 'sh'
+  args:
+- '-c'
+- |
+set -eo pipefail
 
-steps:
-- id: 'master'
-  name: 'work1'
-  entrypoint: 'sh'  
-  args: 
-  - '-c'
-  - | 
-      echo "***********************"
-      echo "$BRANCH_NAME"
-      echo "***********************"
-- id: 'terraform init'
-  name: 'hashicorp/terraform:1.0.0'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - |
-      if [ -d "$BRANCH_NAME" ]; then
-         $BRANCH_NAME
-        terraform init
-    
-          echo ""
-          echo "*************** TERRAFORM INIT ******************"
-          
-          echo "*************************************************"
-          terraform init || exit 1
-          
-        done
-      fi 
-# [START terraformf-plan]
-- id: 'terraform plan'
-  name: 'hashicorp/terraform:1.0.0'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - | 
-      if [ -d "$BRANCH_NAME" ]; then
-        cd $BRANCH_NAME
-        terraform plan
-      
-          echo ""
-          echo "*************** TERRAFOM PLAN ******************"
-    
-          echo "*************************************************"
-          terraform plan || exit 1
-         
-        done
-      fi 
-# [END tf-plan]
+apk add git bash curl
+git https://github.com/khushalpar/workout.git /opt/.tfenv
+ln -s /opt/.tfenv/bin/* /usr/local/bin
 
-# [START tf-apply]
-- id: 'terraform apply'
-  name: 'hashicorp/terraform:1.0.0'
-  entrypoint: 'sh'
-  args: 
-  - '-c'
-  - | 
-      if [ -d "$BRANCH_NAME" ]; then
-        cd $BRANCH_NAME      
-        terraform apply -auto-approve
-      else
-        echo "***************************** SKIPPING APPLYING *******************************"
-        echo "Branch '$BRANCH_NAME' does not represent an oficial environment."
-        echo "*******************************************************************************"
-      fi
+for folder in $(ls .); do
+  echo "+-------------------------------------------+"
+  echo "Applying state ${folder} "
+  echo "+-------------------------------------------+"
+
+  cd $folder
+  tfenv install
+  terraform init
+  terraform apply \
+-auto-approve \
+"/var/terraform_plan_files/${folder}_${BUILD_ID}_${PROJECT_NUMBER}.plan"
+  cd -
+done
